@@ -1,4 +1,6 @@
 const express = require('express');
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('../swagger-output.json');
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 
@@ -21,6 +23,9 @@ app.use((req, res, next) => {
   if (req.query) sanitize(req.query);
   next();
 });
+
+// Rota da documentação Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
