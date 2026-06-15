@@ -1,18 +1,39 @@
-// Importa a biblioteca mongoose para conectar ao MongoDB
+const dns = require('dns');
 const mongoose = require('mongoose');
 
-// Função assíncrona que realiza a conexão com o banco de dados
+const configureDnsForAtlas = (mongoUri) => {
+  if (!mongoUri.startsWith('mongodb+srv://')) {
+    return;
+  }
+
+  const servers = (process.env.MONGODB_DNS_SERVERS || '1.1.1.1,8.8.8.8')
+    .split(',')
+    .map((server) => server.trim())
+    .filter(Boolean);
+
+  if (servers.length > 0) {
+    dns.setServers(servers);
+  }
+};
+
 const connectDB = async () => {
   try {
-    // Tenta conectar usando a URL definida no arquivo .env
-    await mongoose.connect(process.env.MONGODB_URI);
+    const mongoUri = process.env.MONGODB_URI;
+
+    if (!mongoUri) {
+      throw new Error('MONGODB_URI nao foi definida no arquivo .env');
+    }
+
+    configureDnsForAtlas(mongoUri);
+
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 10000,
+    });
     console.log('MongoDB conectado com sucesso');
   } catch (error) {
-    // Se der erro na conexão, mostra a mensagem e encerra o processo
     console.error('Erro ao conectar ao MongoDB:', error.message);
     process.exit(1);
   }
 };
 
-// Exporta a função para ser usada em outros arquivos
 module.exports = connectDB;

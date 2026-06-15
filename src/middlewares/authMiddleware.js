@@ -1,11 +1,10 @@
 const jwt = require('jsonwebtoken');
 
-// Verifica se o usuário está autenticado antes de acessar rotas protegidas
 const protect = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Acesso negado. Token não fornecido.' });
+    return res.status(401).json({ message: 'Acesso negado. Token nao fornecido.' });
   }
 
   try {
@@ -14,7 +13,7 @@ const protect = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Token inválido ou expirado.' });
+    res.status(401).json({ message: 'Token invalido ou expirado.' });
   }
 };
 

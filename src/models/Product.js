@@ -1,11 +1,28 @@
 const mongoose = require('mongoose');
 
-// Schema que define a estrutura do produto no banco
-const productSchema = new mongoose.Schema({
+/**
+ * Representa um produto cadastrado no catalogo.
+ *
+ * @typedef {Object} ProductDocument
+ * @property {string} name - Nome do produto.
+ * @property {string} [description] - Descricao opcional do produto.
+ * @property {number} price - Preco do produto.
+ * @property {'eletronicos'|'vestuario'|'alimentos'|'informatica'|'outros'} category - Categoria do produto.
+ * @property {number} stock - Quantidade disponivel em estoque.
+ * @property {Record<string, unknown>} attributes - Atributos dinamicos do produto.
+ * @property {import('mongoose').Types.ObjectId} createdBy - Usuario responsavel pelo cadastro.
+ */
 
+/**
+ * Schema Mongoose responsavel por validar e mapear os dados de produtos.
+ *
+ * @type {import('mongoose').Schema<ProductDocument>}
+ * @throws {import('mongoose').Error.ValidationError} Disparado quando dados obrigatorios ou invalidos sao enviados.
+ */
+const productSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Nome é obrigatório'],
+    required: [true, 'Nome e obrigatorio'],
     trim: true
   },
 
@@ -16,13 +33,13 @@ const productSchema = new mongoose.Schema({
 
   price: {
     type: Number,
-    required: [true, 'Preço é obrigatório'],
-    min: [0, 'Preço não pode ser negativo']
+    required: [true, 'Preco e obrigatorio'],
+    min: [0, 'Preco nao pode ser negativo']
   },
 
   category: {
     type: String,
-    required: [true, 'Categoria é obrigatória'],
+    required: [true, 'Categoria e obrigatoria'],
     enum: ['eletronicos', 'vestuario', 'alimentos', 'informatica', 'outros']
   },
 
@@ -32,19 +49,25 @@ const productSchema = new mongoose.Schema({
     min: 0
   },
 
-  // Atributos dinâmicos — cada categoria tem os seus próprios
   attributes: {
     type: mongoose.Schema.Types.Mixed,
     default: {}
   },
 
-  // Guarda qual usuário criou o produto
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   }
-
 }, { timestamps: true });
 
+/**
+ * Model de persistencia para produtos.
+ *
+ * Disponibiliza metodos do Mongoose como create, find, findById,
+ * findByIdAndUpdate e findByIdAndDelete para manipulacao da colecao.
+ *
+ * @type {import('mongoose').Model<ProductDocument>}
+ * @returns {import('mongoose').Model<ProductDocument>} Model usado pelos controllers para acessar produtos.
+ */
 module.exports = mongoose.model('Product', productSchema);

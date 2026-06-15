@@ -8,17 +8,22 @@ const app = express();
 
 app.use(express.json());
 
-// Proteção contra NoSQL Injection
+// Protecao contra NoSQL Injection
 app.use((req, res, next) => {
   const sanitize = (obj) => {
-    for (let key in obj) {
+    if (!obj || typeof obj !== 'object') {
+      return;
+    }
+
+    for (const key in obj) {
       if (key.startsWith('$')) {
         delete obj[key];
-      } else if (typeof obj[key] === 'object') {
+      } else if (obj[key] && typeof obj[key] === 'object') {
         sanitize(obj[key]);
       }
     }
   };
+
   if (req.body) sanitize(req.body);
   if (req.query) sanitize(req.query);
   next();
@@ -31,11 +36,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 
 app.get('/', (req, res) => {
-  res.json({ message: 'API Catálogo de Produtos funcionando!' });
+  res.json({ message: 'API Catalogo de Produtos funcionando!' });
 });
 
 app.use((req, res) => {
-  res.status(404).json({ message: 'Rota não encontrada' });
+  res.status(404).json({ message: 'Rota nao encontrada' });
 });
 
 module.exports = app;

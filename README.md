@@ -1,72 +1,156 @@
-# catalogo-produtos-api2
-# Catálogo de Produtos API
+# Catalogo de Produtos API
 
-API REST para gerenciamento de produtos com atributos dinâmicos,
-desenvolvida com Node.js, Express e MongoDB.
+![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)
 
-## Tecnologias
-- Node.js + Express
-- MongoDB Atlas + Mongoose
-- JWT (autenticação)
-- BCrypt (criptografia de senhas)
+API REST desenvolvida em Node.js para cadastro, consulta, atualizacao e remocao de produtos.
+O projeto utiliza arquitetura MVC com controllers, models, rotas e configuracao de banco separadas.
+A autenticacao e feita com JWT, permitindo proteger as rotas de produtos para usuarios logados.
 
-## Como rodar o projeto
+## Stack Tecnologica
 
-### Pré-requisitos
-- Node.js v18+
-- Conta no MongoDB Atlas
+- Node.js
+- Express
+- MongoDB Atlas
+- Mongoose
+- JSON Web Token (JWT)
+- bcryptjs
+- dotenv
+- nodemon
 
-### Instalação
+## Funcionalidades
+
+- Cadastro de usuarios
+- Login com geracao de token JWT
+- Criacao de produtos autenticada
+- Listagem de produtos com filtros opcionais
+- Busca de produto por ID
+- Atualizacao de produtos
+- Remocao de produtos
+
+## Estrutura do Projeto
+
+```text
+catalogo-produtos-api2/
+├── src/
+│   ├── config/
+│   │   └── database.js
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   └── productController.js
+│   ├── middlewares/
+│   │   └── authMiddleware.js
+│   ├── models/
+│   │   ├── Product.js
+│   │   └── User.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   └── productRoutes.js
+│   └── app.js
+├── .env.example
+├── package.json
+├── README.md
+└── server.js
+```
+
+## Pre-requisitos
+
+- Node.js 18 ou superior
+- npm
+- Conta e cluster configurado no MongoDB Atlas
+
+## Instalacao e Execucao
+
+Clone o repositorio:
+
 ```bash
 git clone https://github.com/soso-info/catalogo-produtos-api2.git
+```
+
+Acesse a pasta do projeto:
+
+```bash
 cd catalogo-produtos-api2
+```
+
+Instale as dependencias:
+
+```bash
 npm install
 ```
 
-### Configurar variáveis de ambiente
-Copie o arquivo de exemplo e preencha com seus dados:
+Crie o arquivo `.env` a partir do exemplo:
+
 ```bash
 cp .env.example .env
 ```
 
-Edite o `.env` com sua string de conexão do MongoDB Atlas e uma chave JWT.
+Execute em modo de desenvolvimento:
 
-### Rodar o servidor
 ```bash
-npm run dev   # desenvolvimento
-npm start     # produção
+npm run dev
 ```
 
-O servidor sobe em: http://localhost:3000
+Execute em modo de producao:
+
+```bash
+npm start
+```
+
+Servidor padrao:
+
+```text
+http://localhost:3000
+```
+
+## Variaveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto com os campos abaixo. Nao publique senhas reais no GitHub.
+
+```env
+PORT=3000
+MONGODB_URI=mongodb+srv://USUARIO:SENHA@cluster.mongodb.net/NOME_DO_BANCO?retryWrites=true&w=majority
+MONGODB_DNS_SERVERS=1.1.1.1,8.8.8.8
+JWT_SECRET=sua_chave_secreta_aqui
+```
 
 ## Endpoints
 
-### Autenticação
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| POST | /api/auth/register | Registrar novo usuário |
-| POST | /api/auth/login | Login e obtenção do token |
+### Autenticacao
 
-### Produtos (autenticação obrigatória)
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | /api/products | Listar todos os produtos |
-| GET | /api/products/:id | Buscar produto por ID |
-| POST | /api/products | Criar novo produto |
-| PUT | /api/products/:id | Atualizar produto |
-| DELETE | /api/products/:id | Deletar produto |
+| Metodo | Rota | Descricao |
+| --- | --- | --- |
+| POST | `/api/auth/register` | Registra um novo usuario |
+| POST | `/api/auth/login` | Autentica um usuario e retorna um token |
 
-### Como autenticar
-Após o login, inclua o token no header de cada requisição:
+### Produtos
 
+As rotas abaixo exigem token JWT no header `Authorization`.
+
+| Metodo | Rota | Descricao |
+| --- | --- | --- |
+| GET | `/api/products` | Lista produtos cadastrados |
+| GET | `/api/products/:id` | Busca um produto pelo ID |
+| POST | `/api/products` | Cria um novo produto |
+| PUT | `/api/products/:id` | Atualiza um produto existente |
+| DELETE | `/api/products/:id` | Remove um produto |
+
+## Autenticacao
+
+Apos realizar login, envie o token JWT no header das requisicoes protegidas:
+
+```http
 Authorization: Bearer SEU_TOKEN_AQUI
+```
 
-### Exemplo de corpo para criar produto
+## Exemplo de Produto
+
 ```json
 {
   "name": "Notebook Dell",
   "description": "Notebook para uso profissional",
-  "price": 3499.90,
+  "price": 3499.9,
   "category": "informatica",
   "stock": 10,
   "attributes": {
@@ -76,3 +160,12 @@ Authorization: Bearer SEU_TOKEN_AQUI
   }
 }
 ```
+
+## Documentacao Interna
+
+Os arquivos de models e controllers possuem blocos JSDoc para auxiliar a leitura do codigo e o IntelliSense do VS Code:
+
+- `src/models/Product.js`
+- `src/models/User.js`
+- `src/controllers/productController.js`
+- `src/controllers/authController.js`
