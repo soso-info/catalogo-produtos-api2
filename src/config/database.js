@@ -1,39 +1,26 @@
-const dns = require('dns');
-const mongoose = require('mongoose');
+const mysql = require('mysql2/promise');
 
-const configureDnsForAtlas = (mongoUri) => {
-  if (!mongoUri.startsWith('mongodb+srv://')) {
-    return;
-  }
-
-  const servers = (process.env.MONGODB_DNS_SERVERS || '1.1.1.1,8.8.8.8')
-    .split(',')
-    .map((server) => server.trim())
-    .filter(Boolean);
-
-  if (servers.length > 0) {
-    dns.setServers(servers);
-  }
-};
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  port: Number(process.env.DB_PORT) || 3306,
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'loja',
+  waitForConnections: true,
+  connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,
+  queueLimit: 0,
+});
 
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGODB_URI;
-
-    if (!mongoUri) {
-      throw new Error('MONGODB_URI nao foi definida no arquivo .env');
-    }
-
-    configureDnsForAtlas(mongoUri);
-
-    await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 10000,
-    });
-    console.log('MongoDB conectado com sucesso');
+    await pool.query('SELECT 1');
+    console.log('MySQL conectado com sucesso');
   } catch (error) {
-    console.error('Erro ao conectar ao MongoDB:', error.message);
+    console.error('Erro ao conectar ao MySQL:', error.message);
     process.exit(1);
   }
 };
+
+connectDB.pool = pool;
 
 module.exports = connectDB;

@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Catálogo de Produtos API",
-    "description": "API REST para gerenciamento de produtos com autenticação JWT",
+    "title": "Catalogo de Categorias API",
+    "description": "API REST com MySQL para autenticacao e CRUD protegido de categorias",
     "version": "1.0.0"
   },
   "host": "localhost:3000",
@@ -16,10 +16,36 @@
       "in": "header",
       "name": "Authorization",
       "description": "Insira o token assim: Bearer <seu_token>"
+    },
+    "userIdAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "x-user-id",
+      "description": "Informe o ID do usuario autenticado"
     }
   },
   "paths": {
     "/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/status": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/versao": {
       "get": {
         "description": "",
         "responses": {
@@ -42,10 +68,16 @@
                 "name": {
                   "example": "any"
                 },
+                "nome": {
+                  "example": "any"
+                },
                 "email": {
                   "example": "any"
                 },
                 "password": {
+                  "example": "any"
+                },
+                "senha": {
                   "example": "any"
                 }
               }
@@ -80,6 +112,9 @@
                 },
                 "password": {
                   "example": "any"
+                },
+                "senha": {
+                  "example": "any"
                 }
               }
             }
@@ -88,6 +123,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -98,28 +136,13 @@
         }
       }
     },
-    "/api/products/": {
+    "/api/categorias/": {
       "get": {
         "description": "",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "category",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "minPrice",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "maxPrice",
-            "in": "query",
             "type": "string"
           }
         ],
@@ -129,6 +152,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -142,6 +168,18 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -153,11 +191,20 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/api/products/{id}": {
+    "/api/categorias/{id}": {
       "get": {
         "description": "",
         "parameters": [
@@ -177,8 +224,14 @@
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -201,6 +254,18 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -213,8 +278,17 @@
           "401": {
             "description": "Unauthorized"
           },
+          "403": {
+            "description": "Forbidden"
+          },
           "404": {
             "description": "Not Found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
@@ -237,8 +311,14 @@
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"

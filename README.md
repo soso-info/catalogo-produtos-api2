@@ -1,171 +1,135 @@
-# Catalogo de Produtos API
+# Catalogo de Produtos API - MySQL
 
-![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)
-![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)
+API REST em Node.js migrada de NoSQL para MySQL. Esta versao implementa autenticacao relacional e CRUD protegido apenas para categorias, conforme o escopo da atividade.
 
-API REST desenvolvida em Node.js para cadastro, consulta, atualizacao e remocao de produtos.
-O projeto utiliza arquitetura MVC com controllers, models, rotas e configuracao de banco separadas.
-A autenticacao e feita com JWT, permitindo proteger as rotas de produtos para usuarios logados.
-
-## Stack Tecnologica
+## Tecnologias
 
 - Node.js
 - Express
-- MongoDB Atlas
-- Mongoose
-- JSON Web Token (JWT)
+- MySQL
+- mysql2 com Promises
+- JSON Web Token
 - bcryptjs
 - dotenv
-- nodemon
+- Swagger
 
-## Funcionalidades
-
-- Cadastro de usuarios
-- Login com geracao de token JWT
-- Criacao de produtos autenticada
-- Listagem de produtos com filtros opcionais
-- Busca de produto por ID
-- Atualizacao de produtos
-- Remocao de produtos
-
-## Estrutura do Projeto
+## Estrutura
 
 ```text
-catalogo-produtos-api2/
-├── src/
-│   ├── config/
-│   │   └── database.js
-│   ├── controllers/
-│   │   ├── authController.js
-│   │   └── productController.js
-│   ├── middlewares/
-│   │   └── authMiddleware.js
-│   ├── models/
-│   │   ├── Product.js
-│   │   └── User.js
-│   ├── routes/
-│   │   ├── authRoutes.js
-│   │   └── productRoutes.js
-│   └── app.js
-├── .env.example
-├── package.json
-├── README.md
-└── server.js
+database/
+  loja.sql
+src/
+  config/
+    database.js
+  controllers/
+    authController.js
+    categoriaController.js
+  middlewares/
+    authMiddleware.js
+  models/
+    categoriaModel.js
+    usuarioModel.js
+  routes/
+    apiRoutes.js
+    authRoutes.js
+    categoriaRoutes.js
+  app.js
+server.js
 ```
 
-## Pre-requisitos
+## Configuracao
 
-- Node.js 18 ou superior
-- npm
-- Conta e cluster configurado no MongoDB Atlas
-
-## Instalacao e Execucao
-
-Clone o repositorio:
-
-```bash
-git clone https://github.com/soso-info/catalogo-produtos-api2.git
-```
-
-Acesse a pasta do projeto:
-
-```bash
-cd catalogo-produtos-api2
-```
-
-Instale as dependencias:
-
-```bash
-npm install
-```
-
-Crie o arquivo `.env` a partir do exemplo:
-
-```bash
-cp .env.example .env
-```
-
-Execute em modo de desenvolvimento:
-
-```bash
-npm run dev
-```
-
-Execute em modo de producao:
-
-```bash
-npm start
-```
-
-Servidor padrao:
-
-```text
-http://localhost:3000
-```
-
-## Variaveis de Ambiente
-
-Crie um arquivo `.env` na raiz do projeto com os campos abaixo. Nao publique senhas reais no GitHub.
+Crie o arquivo `.env` na raiz:
 
 ```env
 PORT=3000
-MONGODB_URI=mongodb+srv://USUARIO:SENHA@cluster.mongodb.net/NOME_DO_BANCO?retryWrites=true&w=majority
-MONGODB_DNS_SERVERS=1.1.1.1,8.8.8.8
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=sua_senha_mysql
+DB_NAME=loja
+DB_CONNECTION_LIMIT=10
 JWT_SECRET=sua_chave_secreta_aqui
 ```
 
-## Endpoints
+Execute o script do banco:
 
-### Autenticacao
-
-| Metodo | Rota | Descricao |
-| --- | --- | --- |
-| POST | `/api/auth/register` | Registra um novo usuario |
-| POST | `/api/auth/login` | Autentica um usuario e retorna um token |
-
-### Produtos
-
-As rotas abaixo exigem token JWT no header `Authorization`.
-
-| Metodo | Rota | Descricao |
-| --- | --- | --- |
-| GET | `/api/products` | Lista produtos cadastrados |
-| GET | `/api/products/:id` | Busca um produto pelo ID |
-| POST | `/api/products` | Cria um novo produto |
-| PUT | `/api/products/:id` | Atualiza um produto existente |
-| DELETE | `/api/products/:id` | Remove um produto |
-
-## Autenticacao
-
-Apos realizar login, envie o token JWT no header das requisicoes protegidas:
-
-```http
-Authorization: Bearer SEU_TOKEN_AQUI
+```bash
+mysql -u root -p < database/loja.sql
 ```
 
-## Exemplo de Produto
+Instale e rode:
+
+```bash
+npm install
+npm run dev
+```
+
+## Rotas publicas
+
+```http
+GET /api/status
+GET /api/versao
+```
+
+Resposta:
 
 ```json
 {
-  "name": "Notebook Dell",
-  "description": "Notebook para uso profissional",
-  "price": 3499.9,
-  "category": "informatica",
-  "stock": 10,
-  "attributes": {
-    "ram": "16GB",
-    "processador": "Intel i5",
-    "tela": "15.6 polegadas"
-  }
+  "versao": "2.0.0",
+  "status": "online"
 }
 ```
 
-## Documentacao Interna
+## Autenticacao
 
-Os arquivos de models e controllers possuem blocos JSDoc para auxiliar a leitura do codigo e o IntelliSense do VS Code:
+```http
+POST /api/auth/login
+```
 
-- `src/models/Product.js`
-- `src/models/User.js`
-- `src/controllers/productController.js`
-- `src/controllers/authController.js`
+Corpo:
+
+```json
+{
+  "email": "admin@loja.com",
+  "password": "admin123"
+}
+```
+
+O script `database/loja.sql` cria esse usuario inicial.
+
+## Categorias
+
+Todas as rotas de categorias exigem os dois headers:
+
+```http
+Authorization: Bearer SEU_TOKEN
+x-user-id: 1
+```
+
+Sem token, a API retorna `401 Unauthorized`. Sem o ID do usuario ou com ID diferente do token, retorna `403 Forbidden`.
+
+| Metodo | Rota | Acao |
+| --- | --- | --- |
+| GET | `/api/categorias` | Lista categorias |
+| GET | `/api/categorias/:id` | Busca categoria |
+| POST | `/api/categorias` | Cria categoria |
+| PUT | `/api/categorias/:id` | Atualiza categoria |
+| DELETE | `/api/categorias/:id` | Remove categoria |
+
+Exemplo de criacao:
+
+```json
+{
+  "nome": "Games"
+}
+```
+
+## Demonstracao sugerida
+
+1. Acesse `GET /api/status` sem autenticar.
+2. Tente `GET /api/categorias` sem headers e mostre o bloqueio.
+3. Faca login em `POST /api/auth/login`.
+4. Use o token e o `id_usuario` retornado nos headers.
+5. Crie ou altere uma categoria.
+6. Consulte a tabela `categorias` no MySQL para confirmar a persistencia.

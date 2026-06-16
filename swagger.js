@@ -2,8 +2,8 @@ const swaggerAutogen = require('swagger-autogen')();
 
 const doc = {
   info: {
-    title: 'Catálogo de Produtos API',
-    description: 'API REST para gerenciamento de produtos com autenticação JWT'
+    title: 'Catalogo de Categorias API',
+    description: 'API REST com MySQL para autenticacao e CRUD protegido de categorias',
   },
   host: 'localhost:3000',
   securityDefinitions: {
@@ -11,9 +11,15 @@ const doc = {
       type: 'apiKey',
       in: 'header',
       name: 'Authorization',
-      description: 'Insira o token assim: Bearer <seu_token>'
-    }
-  }
+      description: 'Insira o token assim: Bearer <seu_token>',
+    },
+    userIdAuth: {
+      type: 'apiKey',
+      in: 'header',
+      name: 'x-user-id',
+      description: 'Informe o ID do usuario autenticado',
+    },
+  },
 };
 
 const outputFile = './swagger-output.json';
