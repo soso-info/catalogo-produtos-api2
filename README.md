@@ -24,15 +24,24 @@ src/
   controllers/
     authController.js
     categoriaController.js
+    clienteController.js
+    pedidoController.js
+    produtoController.js
   middlewares/
     authMiddleware.js
   models/
     categoriaModel.js
+    clienteModel.js
+    pedidoModel.js
+    produtoModel.js
     usuarioModel.js
   routes/
     apiRoutes.js
     authRoutes.js
     categoriaRoutes.js
+    clientesRoutes.js
+    pedidosRoutes.js
+    produtosRoutes.js
   app.js
 server.js
 ```
@@ -124,6 +133,16 @@ Exemplo de criacao:
   "nome": "Games"
 }
 ```
+
+## Rotas futuras (estrutura criada, CRUD a implementar)
+
+As rotas abaixo ja existem na estrutura (models, controllers e routes criados), mas o CRUD completo sera implementado em tarefas futuras, conforme o escopo da atividade.
+
+| Modulo | Rotas | Autenticacao |
+| --- | --- | --- |
+| Produtos | `/api/produtos` e `/api/produtos/:id` | Sim (Bearer + x-user-id) |
+| Clientes | `/api/clientes` e `/api/clientes/:id` | Sim (Bearer + x-user-id) |
+| Pedidos | `/api/pedidos` e `/api/pedidos/:id` | Sim (Bearer + x-user-id) |
 
 ## Demonstracao sugerida
 
